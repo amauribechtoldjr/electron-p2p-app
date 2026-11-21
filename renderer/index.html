@@ -1,7 +1,18 @@
-<span>Hello world!</span>
-<div>
-  <input placeholder="message" id="message" />
-  <button onclick="" id="sendBtn">Send message</button>
-  <pre id="log"></pre>
-</div>
-<script src="app.js"></script>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'" />
+    <title>P2P Messages</title>
+  </head>
+  <body>
+    <p id="status">connecting to swarm…</p>
+    <p id="peers">peers: 0</p>
+    <div id="log"></div>
+    <form id="composer">
+      <input id="message" placeholder="message" autocomplete="off" />
+      <button>Send</button>
+    </form>
+    <script src="app.js"></script>
+  </body>
+</html>

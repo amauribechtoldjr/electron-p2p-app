@@ -1,5 +1,10 @@
 const { contextBridge, ipcRenderer } = require("electron/renderer");
 
 contextBridge.exposeInMainWorld("chat", {
-  ping: (text) => ipcRenderer.invoke("chat:ping", text),
+  send: (msg) => ipcRenderer.invoke("chat:send", msg),
+  onEvent: (listener) => {
+    const handler = (_event, data) => listener(data);
+    ipcRenderer.on("chat:event", handler);
+    return () => ipcRenderer.removeListener("chat:event", handler);
+  },
 });
