@@ -4,16 +4,32 @@ const log = document.getElementById("log");
 const form = document.getElementById("composer");
 const input = document.getElementById("message");
 
+const messages = new Map();
+
+function sortMessages(list) {
+  return list.sort(
+    (a, b) => a.timestamp - b.timestamp || a.id.localeCompare(b.id),
+  );
+}
+
+function render() {
+  const lines = sortMessages([...messages.values()]).map((msg) => {
+    const line = document.createElement("div");
+    line.textContent = `[${msg.from}] ${msg.nickname} ${formatTime(msg.timestamp)}: ${msg.text}`;
+    if (msg.mine) line.style.fontWeight = "bold";
+    return line;
+  });
+  log.replaceChildren(...lines);
+}
+
 function formatTime(timestamp) {
   return new Date(timestamp).toLocaleTimeString();
 }
 
 function addMessage(msg) {
-  const line = document.createElement("div");
-  line.textContent = `[${msg.from}] ${msg.nickname} ${formatTime(msg.timestamp)}: ${msg.text}`;
-  console.log("msg: ", msg);
-  if (msg.mine) line.style.fontWeight = "bold";
-  log.append(line);
+  if (messages.has(msg.id)) return; // the same message can arrive twice (e.g. sync replay)
+  messages.set(msg.id, msg);
+  render();
 }
 
 window.chat.onEvent((event) => {

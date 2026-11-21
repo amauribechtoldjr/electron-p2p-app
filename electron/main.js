@@ -8,7 +8,22 @@ const { registerChatIpc } = require("./ipc/chat");
 let quitting = false;
 let workerExited = false;
 
-const worker = PearRuntime.run(require.resolve("../workers/main.js"), []);
+function argValue(name) {
+  const index = process.argv.indexOf(name);
+  return index === -1 ? null : process.argv[index + 1];
+}
+
+const storage = path.resolve(
+  argValue("--storage") ||
+    path.join(app.getPath("appData"), "electron-p2p-messages"),
+);
+
+app.setPath("userData", path.join(storage, "electron"));
+
+const worker = PearRuntime.run(require.resolve("../workers/main.js"), [
+  "--storage",
+  path.join(storage, "corestore"),
+]);
 
 worker.on("exit", () => {
   workerExited = true;
@@ -41,16 +56,16 @@ app.whenReady().then(() => {
 
 app.on("window-all-closed", () => app.quit());
 app.on("before-quit", (event) => {
-  if (quitting || workerExited) return; // second pass, or nothing to wait for
+  if (quitting || workerExited) return;
   quitting = true;
-  event.preventDefault(); // hold the quit until the worker is gone
+  event.preventDefault();
 
   pipe.write(JSON.stringify({ type: "shutdown" }));
-  const fallback = setTimeout(() => worker.destroy(), 3000); // kills bare.exe
+  const fallback = setTimeout(() => worker.destroy(), 3000);
 
   worker.once("exit", () => {
     clearTimeout(fallback);
-    app.quit(); // runs before-quit again, which now lets it through
+    app.quit();
   });
 });
 
