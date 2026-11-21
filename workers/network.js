@@ -6,21 +6,39 @@ const { topicFor } = require("./protocol.js");
 function createNetwork({ storage, onPeers }) {
   const swarm = new Hyperswarm();
   const sockets = new Set();
+  const keyChannels = new Set();
+
+  async function learnAndForward(key, from) {
+    const isNew = await storage.learnKey(key);
+    if (!isNew) return;
+    for (const keyMessage of keyChannels) {
+      if (keyMessage !== from) keyMessage.send(key);
+    }
+  }
 
   function exchangeKeys(socket) {
     const mux = Protomux.from(socket);
+    let keyMessage = null;
+
     const channel = mux.createChannel({
       protocol: "electron-p2p-messages/keys",
       onopen() {
+        keyChannels.add(keyMessage);
         keyMessage.send(storage.key);
+        for (const key of storage.knownKeys()) keyMessage.send(key);
+      },
+      onclose() {
+        keyChannels.delete(keyMessage);
       },
     });
     if (!channel) return;
 
-    const keyMessage = channel.addMessage({
+    keyMessage = channel.addMessage({
       encoding: compactEncoding.fixed32,
       onmessage: (key) =>
-        storage.learnKey(key).catch((err) => console.error(err.message)),
+        learnAndForward(key, keyMessage).catch((err) =>
+          console.error(err.message),
+        ),
     });
     channel.open();
   }

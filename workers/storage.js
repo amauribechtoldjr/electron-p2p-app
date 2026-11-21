@@ -61,16 +61,21 @@ function createStorage(dir, { onMessage }) {
       }
     },
 
+    knownKeys() {
+      return [...remotes.keys()].map((hexKey) => b4a.from(hexKey, "hex"));
+    },
+
     append(msg) {
       return mine.append(msg);
     },
 
     async learnKey(key) {
       const hexKey = b4a.toString(key, "hex");
-      if (isKnown(hexKey)) return;
+      if (isKnown(hexKey)) return false;
       const opening = openRemote(hexKey);
       await known.append(hexKey);
       await opening;
+      return true;
     },
 
     replicate(socket) {
