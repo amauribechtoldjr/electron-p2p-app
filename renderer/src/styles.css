@@ -1,0 +1,168 @@
+:root {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --line: #dde1e6;
+  --muted: #667085;
+  --accent: #0a6a86;
+  --mine: #e2f0f4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f141a;
+    --panel: #17202a;
+    --line: #2c3845;
+    --muted: #93a1b0;
+    --accent: #3a9fba;
+    --mine: #15313a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+}
+
+input,
+button {
+  font: inherit;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.notice,
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.notice {
+  padding: 16px;
+}
+
+.join {
+  max-width: 320px;
+  margin: 15vh auto 0;
+  display: grid;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.join label {
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.chat {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.header span {
+  color: var(--muted);
+}
+
+.header .error {
+  color: #d92d20;
+}
+
+.messages {
+  list-style: none;
+  margin: 0;
+  padding: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messages.empty {
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+
+.message {
+  max-width: 70%;
+  align-self: flex-start;
+}
+
+.message.mine {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.message .text {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.message.mine .text {
+  background: var(--mine);
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.from {
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+.composer input {
+  flex: 1;
+  min-width: 0;
+}

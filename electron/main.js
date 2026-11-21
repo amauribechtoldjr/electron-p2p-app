@@ -49,7 +49,9 @@ app.whenReady().then(() => {
     },
   });
 
-  win.loadFile(path.join(__dirname, "..", "renderer", "index.html"));
+  const devServerUrl = process.env.DEV_SERVER_URL;
+  if (devServerUrl) win.loadURL(devServerUrl);
+  else win.loadFile(path.join(__dirname, "..", "renderer", "dist", "index.html"));
 
   registerChatIpc(ipcMain, { pipe, win });
 });

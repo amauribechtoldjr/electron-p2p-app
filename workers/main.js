@@ -25,8 +25,8 @@ const network = createNetwork({
   onPeers: (count) => chat.setPeers(count),
 });
 
-async function start(room) {
-  chat.setConnecting(room);
+async function start(room, nickname) {
+  chat.setConnecting(room, nickname);
   await storage.open(room);
   await network.join(room);
   chat.setReady();
@@ -50,4 +50,10 @@ ipc.on("shutdown", async () => {
   Bare.exit(0);
 });
 
-start("lobby").catch((err) => chat.error(err));
+ipc.on("join", ({ room, nickname }) => {
+  if (chat.state.room) return;
+  const name = String(room || "").trim().toLowerCase();
+  if (!name) return chat.error(new Error("room name is required"));
+  const nick = String(nickname || "").trim().slice(0, 32) || "anon";
+  start(name, nick).catch((err) => chat.error(err));
+});
