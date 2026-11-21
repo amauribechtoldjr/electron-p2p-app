@@ -1,6 +1,5 @@
 const Hyperswarm = require("hyperswarm");
 const Protomux = require("protomux");
-const b4a = require("b4a");
 const compactEncoding = require("compact-encoding");
 const { topicFor } = require("./protocol.js");
 
@@ -26,7 +25,7 @@ function createNetwork({ storage, onPeers }) {
     channel.open();
   }
 
-  swarm.on("connection", (socket, info) => {
+  swarm.on("connection", (socket) => {
     sockets.add(socket);
     onPeers(sockets.size);
 
